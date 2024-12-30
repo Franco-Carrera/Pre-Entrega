@@ -4,7 +4,7 @@ export class ProductsPage {
   }
 
   addProductsToCart(producto) {
-    cy.get(producto, { timeout: 7500 }).click();
+    cy.get(`[name='${producto}']`, { timeout: 7500 }).click();
     cy.get(this.closeModal).click();
   }
 }

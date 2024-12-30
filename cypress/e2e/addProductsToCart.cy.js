@@ -33,16 +33,11 @@ describe("Module Online Shop", () => {
       data.productos.producto2.precio * data.productos.producto2.cantidad;
 
     //cy.log(data);
-    productsPage.addProductsToCart(
-      `[name='${data.productos.producto1.nombre}']`
-    );
-    productsPage.addProductsToCart(
-      `[name='${data.productos.producto1.nombre}']`
-    );
-    productsPage.addProductsToCart(
-      `[name='${data.productos.producto2.nombre}']`
-    );
-    cy.get('[data-cy="goShoppingCart"]').click();
+    productsPage.addProductsToCart(data.productos.producto1.nombre);
+    productsPage.addProductsToCart(data.productos.producto1.nombre);
+    productsPage.addProductsToCart(data.productos.producto2.nombre);
+
+    shoppingCartPage.goToShoppingCartModule();
 
     shoppingCartPage
       .encontrarNombreYPrecio(data.productos.producto1.nombre)
@@ -68,11 +63,13 @@ describe("Module Online Shop", () => {
       .encontrarNombreYPrecioMaximo(data.productos.producto2.nombre)
       .should("have.text", `$${precioMaximoProductoDos}`);
 
-    cy.contains("Show total price").click();
+    shoppingCartPage.mostrarPrecioFinal();
 
-    cy.get("#price > b").should(
-      "have.text",
-      `${precioMaximoProductoUno + precioMaximoProductoDos}`
-    );
+    shoppingCartPage
+      .encontrarPrecioFinal()
+      .should(
+        "have.text",
+        `${precioMaximoProductoUno + precioMaximoProductoDos}`
+      );
   });
 });

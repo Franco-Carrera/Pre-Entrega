@@ -1,38 +1,40 @@
 //
-import { AuthPage } from "../support/pages/authPage";
 import { HomePage } from "../support/pages/homePage";
 import { ProductsPage } from "../support/pages/productsPage";
 import { ShoppingCartPage } from "../support/pages/shoppingCartPage";
+import { CheckoutPage } from "../support/pages/checkoutPage";
+import { ReciptPage } from "../support/pages/reciptPage";
 
 describe("Module Online Shop", () => {
-  const authPage = new AuthPage();
   const homePage = new HomePage();
   const productsPage = new ProductsPage();
   const shoppingCartPage = new ShoppingCartPage();
+  const checkoutPage = new CheckoutPage();
+  const reciptPage = new ReciptPage();
 
   let data;
+  let dataCheckout;
 
   before("Traigo Fixture", () => {
     cy.fixture("products").then((datos) => {
       data = datos;
     });
+    cy.fixture("checkout").then((datos) => {
+      dataCheckout = datos;
+    });
   });
 
   beforeEach("Precondiciones", () => {
+    cy.registerUser();
+    cy.logUser();
     cy.visit("");
-    authPage.redirectLogin();
-    authPage.CompleteLogin();
     homePage.goToOnlineShopModule();
   });
 
-  it("Add Products To Cart", () => {
+  it("Complete purchase", () => {
     const precioMaximoProductoUno =
       data.productos.producto1.precio * data.productos.producto1.cantidad;
 
-    const precioMaximoProductoDos =
-      data.productos.producto2.precio * data.productos.producto2.cantidad;
-
-    //cy.log(data);
     productsPage.addProductsToCart(data.productos.producto1.nombre);
     productsPage.addProductsToCart(data.productos.producto1.nombre);
     productsPage.addProductsToCart(data.productos.producto2.nombre);
@@ -48,20 +50,8 @@ describe("Module Online Shop", () => {
       .should("have.text", `$${data.productos.producto2.precio}`);
 
     shoppingCartPage
-      .encontrarNombreYCantidad(data.productos.producto1.nombre)
-      .should("have.text", data.productos.producto1.cantidad);
-
-    shoppingCartPage
-      .encontrarNombreYCantidad(data.productos.producto2.nombre)
-      .should("have.text", data.productos.producto2.cantidad);
-
-    shoppingCartPage
       .encontrarNombreYPrecioMaximo(data.productos.producto1.nombre)
       .should("have.text", `$${precioMaximoProductoUno}`);
-
-    shoppingCartPage
-      .encontrarNombreYPrecioMaximo(data.productos.producto2.nombre)
-      .should("have.text", `$${precioMaximoProductoDos}`);
 
     shoppingCartPage.mostrarPrecioFinal();
 
@@ -69,7 +59,47 @@ describe("Module Online Shop", () => {
       .encontrarPrecioFinal()
       .should(
         "have.text",
-        `${precioMaximoProductoUno + precioMaximoProductoDos}`
+        `${precioMaximoProductoUno + data.productos.producto2.precio}`
       );
+
+    shoppingCartPage.goToBillingPage();
+    shoppingCartPage.goToCheckout();
+    checkoutPage.completeForm(
+      dataCheckout.formulario.nombre,
+      dataCheckout.formulario.apellido,
+      dataCheckout.formulario.tarjeta
+    );
+
+    checkoutPage.confirmOrder();
+
+    reciptPage
+      .encontrarNombreYApellido()
+      .should(
+        "include",
+        `${dataCheckout.formulario.nombre} ${dataCheckout.formulario.apellido}`
+      );
+
+    reciptPage
+      .encontrarProductoUno(data.productos.producto1.nombre)
+      .should("have.text", `2 x ${data.productos.producto1.nombre}`);
+
+    reciptPage
+      .encontrarProductoDos()
+      .should("have.text", `1 x ${data.productos.producto2.nombre}`);
+
+    reciptPage
+      .encontrarTarjetaUser()
+      .should("have.text", dataCheckout.formulario.tarjeta);
+
+    reciptPage
+      .encontrarCostoTotal()
+      .should(
+        "contain.text",
+        `${precioMaximoProductoUno + data.productos.producto2.precio}`
+      );
+  });
+
+  after("Eliminar usuario del sistema", () => {
+    cy.deleteUser();
   });
 });

@@ -5,6 +5,8 @@ export class ShoppingCartPage {
     this.quantity = "#productAmount";
     this.priceTotal = "#totalPrice";
     this.precioFinal = "#price > b";
+    this.goToBillingButton = "#goBillingSummary";
+    this.goToCheckoutButton = "[id='goCheckout']";
   }
 
   goToShoppingCartModule() {
@@ -29,5 +31,13 @@ export class ShoppingCartPage {
 
   encontrarPrecioFinal() {
     return cy.get(this.precioFinal);
+  }
+
+  goToBillingPage() {
+    cy.get(this.goToBillingButton).click();
+  }
+
+  goToCheckout() {
+    cy.get(this.goToCheckoutButton).click();
   }
 }

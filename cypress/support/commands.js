@@ -23,3 +23,48 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+const baseAPIUrl = "https://pushing-it-3.onrender.com";
+
+const numero = Math.floor(Math.random() * 1000);
+const username = `Juan${numero}`;
+const password = "michis123!";
+
+Cypress.Commands.add("registerUser", () => {
+  cy.request({
+    method: "POST",
+    url: `${baseAPIUrl}/api/register`,
+    body: {
+      username: username,
+      password: password,
+      gender: "Male",
+      year: "1982",
+      month: "12",
+      day: "8",
+    },
+  });
+});
+
+Cypress.Commands.add("logUser", (token, user) => {
+  cy.request({
+    method: "POST",
+    url: `${baseAPIUrl}/api/login`,
+    body: {
+      username: username,
+      password: password,
+    },
+  }).then((response) => {
+    cy.log(response.body.token);
+    cy.log(response.body.user.username);
+    window.localStorage.setItem("token", response.body.token);
+    window.localStorage.setItem("user", response.body.user.username);
+    window.localStorage.setItem("_id", response.body.user._id);
+  });
+});
+
+Cypress.Commands.add("deleteUser", () => {
+  cy.request({
+    method: "DELETE",
+    url: `${baseAPIUrl}/api/deleteuser/${username}`,
+  });
+});

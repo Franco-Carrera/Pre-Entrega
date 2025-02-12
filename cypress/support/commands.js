@@ -26,11 +26,7 @@
 
 const baseAPIUrl = "https://pushing-it-3.onrender.com";
 
-const numero = Math.floor(Math.random() * 1000);
-const username = `Juan${numero}`;
-const password = "michis123!";
-
-Cypress.Commands.add("registerUser", () => {
+Cypress.Commands.add("registerUser", (username, password) => {
   cy.request({
     method: "POST",
     url: `${baseAPIUrl}/api/register`,
@@ -45,7 +41,7 @@ Cypress.Commands.add("registerUser", () => {
   });
 });
 
-Cypress.Commands.add("logUser", (token, user) => {
+Cypress.Commands.add("logUser", (username, password) => {
   cy.request({
     method: "POST",
     url: `${baseAPIUrl}/api/login`,
@@ -62,7 +58,7 @@ Cypress.Commands.add("logUser", (token, user) => {
   });
 });
 
-Cypress.Commands.add("deleteUser", () => {
+Cypress.Commands.add("deleteUser", (username) => {
   cy.request({
     method: "DELETE",
     url: `${baseAPIUrl}/api/deleteuser/${username}`,

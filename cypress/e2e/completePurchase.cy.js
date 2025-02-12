@@ -12,6 +12,10 @@ describe("Module Online Shop", () => {
   const checkoutPage = new CheckoutPage();
   const reciptPage = new ReciptPage();
 
+  const numero = Math.floor(Math.random() * 1000);
+  const username = `Juan${numero}`;
+  const password = "michis123!";
+
   let data;
   let dataCheckout;
 
@@ -25,8 +29,8 @@ describe("Module Online Shop", () => {
   });
 
   beforeEach("Precondiciones", () => {
-    cy.registerUser();
-    cy.logUser();
+    cy.registerUser(username, password);
+    cy.logUser(username, password);
     cy.visit("");
     homePage.goToOnlineShopModule();
   });
@@ -100,6 +104,6 @@ describe("Module Online Shop", () => {
   });
 
   after("Eliminar usuario del sistema", () => {
-    cy.deleteUser();
+    cy.deleteUser(username);
   });
 });

@@ -4,6 +4,7 @@ import { ProductsPage } from "../support/pages/productsPage";
 import { ShoppingCartPage } from "../support/pages/shoppingCartPage";
 import { CheckoutPage } from "../support/pages/checkoutPage";
 import { ReciptPage } from "../support/pages/reciptPage";
+const { user, contraseña } = Cypress.env("usuario").credenciales;
 
 describe("Module Online Shop", () => {
   const homePage = new HomePage();
@@ -11,10 +12,6 @@ describe("Module Online Shop", () => {
   const shoppingCartPage = new ShoppingCartPage();
   const checkoutPage = new CheckoutPage();
   const reciptPage = new ReciptPage();
-
-  const numero = Math.floor(Math.random() * 1000);
-  const username = `Juan${numero}`;
-  const password = "michis123!";
 
   let data;
   let dataCheckout;
@@ -29,8 +26,8 @@ describe("Module Online Shop", () => {
   });
 
   beforeEach("Precondiciones", () => {
-    cy.registerUser(username, password);
-    cy.logUser(username, password);
+    cy.registerUser(user, contraseña);
+    cy.logUser(user, contraseña);
     cy.visit("");
     homePage.goToOnlineShopModule();
   });
@@ -104,6 +101,6 @@ describe("Module Online Shop", () => {
   });
 
   after("Eliminar usuario del sistema", () => {
-    cy.deleteUser(username);
+    cy.deleteUser(user);
   });
 });

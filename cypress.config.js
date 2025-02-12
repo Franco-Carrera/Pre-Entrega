@@ -1,5 +1,9 @@
 const { defineConfig } = require("cypress");
 
+const numero = Math.floor(Math.random() * 1000);
+const username = `Juan${numero}`;
+const password = "michis124!";
+
 module.exports = defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
@@ -10,8 +14,12 @@ module.exports = defineConfig({
     watchForFileChanges: false,
     video: false,
     env: {
-      usuario: "pushingit",
-      contraseña: "123456!",
+      usuario: {
+        credenciales: {
+          user: `${username}`,
+          contraseña: `${password}`,
+        },
+      },
     },
     reporter: "mochawesome",
     reporterOptions: {
